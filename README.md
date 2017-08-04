@@ -7,6 +7,21 @@ http://www.sunilsamuel.com
 
 **<h1 align='center'>BRMS :: Kie-Server KJar Deployment</h1>**
 
+<!-- BEGIN HEADERS (copy into root page) -->
+* [Overview](./README.md#overview)
+	* <sub>[Introduction](./README.md#introduction)</sub>
+	* <sub>[Technology Stack](./README.md#technology-stack)</sub>
+* [Installation](./README.md#installation)
+	* <sub>[Create a KJar with Rules](./README.md#create-a-kjar-with-rules)</sub>
+	* <sub>[Install the Kie-Server](./README.md#install-the-kie-server)</sub>
+		* <sub>[Install EAP 7](./README.md#install-eap-7)</sub>
+		* <sub>[Install BRMS for EAP 7](./README.md#install-brms-for-eap-7)</sub>
+		* <sub>[Create User and Role](./README.md#create-user-and-role)</sub>
+		* <sub>[Start the EAP Server](./README.md#start-the-eap-server)</sub>
+	* <sub>[Deploy the KJar into Kie-Server Instance](./README.md#deploy-the-kjar-into-kie-server-instance)</sub>
+<!-- END HEADERS (copy into root page) -->
+<hr>
+
 # Overview
 This documentation provides some detail on deploying kjars into a kie-server.  
 
@@ -60,12 +75,12 @@ Unzip this file into an installation directory
 ```sh
 > unzip jboss-eap-7.0.0.zip
 ```
-This will create a file named `jboss-eap-7.0.0`.  This will be the directory where the kie-server will be installed.
+This will create a directory named `jboss-eap-7.0.0`.  This will be the directory where the kie-server will be installed.
 
 ### Install BRMS for EAP 7
 Download the kie-server from the Red Hat access site.<br>
 https://access.redhat.com/products/red-hat-jboss-brms/<br>
-This documentation uses the *Red Hat JBoss BRMS 6.4.0 Deployable for EAP 7* namely **jboss-brms-6.4.0.GA-deployable-eap7.x.zip**
+This documentation uses the *Red Hat JBoss BRMS 6.4.0 Deployable for EAP 7* namely **jboss-brms-6.4.0.GA-deployable-eap7.x.zip** file.
 
 NOTE: Make sure to unzip this file into the EAP 7 directory.  It will update the jboss-eap-7.0.0 directory.
 
@@ -119,7 +134,7 @@ The container is deployed using the following ReST service.
 ```
 [PUT] http://localhost:8080/kie-server/services/rest/server/containers/[CONTAINER_ID]
 ```
-Where the CONTAINER_ID is the name of that will be used to invoke the rules and the payload (below) will be used to configure the kjar.
+Where the CONTAINER_ID is the name that will be used to invoke the rules. The payload (below) will be used to configure the kjar.
 
 The complete documentation can be found on Red Hat access website.
 
@@ -158,4 +173,55 @@ The **PUT** request will contain the following payload.  Note that the `<release
     </release-id>
     <scanner poll-interval="5000" status="STARTED"/>
 </kie-container>
+```
+At this point, the rules (kjar) has been deployed and you are ready to send requests (commands) to it.  Re-run the 'container' command as follows:
+
+```
+http://localhost:8080/kie-server/services/rest/server/containers
+```
+Now, the ReST service will respond with the following payload:
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response type="SUCCESS" msg="List of created containers">
+    <kie-containers>
+        <kie-container container-id="service-sight-rules" status="STARTED">
+            <config-items>
+                <itemName>RuntimeStrategy</itemName>
+                <itemValue>SINGLETON</itemValue>
+                <itemType>java.lang.String</itemType>
+            </config-items>
+            <config-items>
+                <itemName>UpdatePolicy</itemName>
+                <itemValue>never</itemValue>
+                <itemType>java.lang.String</itemType>
+            </config-items>
+            <config-items>
+                <itemName>MergeMode</itemName>
+                <itemValue>MERGE_COLLECTIONS</itemValue>
+                <itemType>java.lang.String</itemType>
+            </config-items>
+            <config-items>
+                <itemName>KBase</itemName>
+                <itemValue></itemValue>
+                <itemType>java.lang.String</itemType>
+            </config-items>
+            <config-items>
+                <itemName>KSession</itemName>
+                <itemValue></itemValue>
+                <itemType>java.lang.String</itemType>
+            </config-items>
+            <release-id>
+                <artifact-id>service-sight-rules</artifact-id>
+                <group-id>com.tke.servicesight.rules</group-id>
+                <version>0.0.1-SNAPSHOT</version>
+            </release-id>
+            <resolved-release-id>
+                <artifact-id>my-example-rules</artifact-id>
+                <group-id>com.sunilsamuel.example.rules</group-id>
+                <version>0.0.1-SNAPSHOT</version>
+            </resolved-release-id>
+            <scanner poll-interval="5000" status="STARTED"/>
+        </kie-container>
+    </kie-containers>
+</response>
 ```
