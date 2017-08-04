@@ -225,3 +225,28 @@ Now, the ReST service will respond with the following payload:
     </kie-containers>
 </response>
 ```
+
+**NOTE: If you see the following errors in the log file.**
+```
+[org.eclipse.aether.internal.impl.DefaultUpdatePolicyAnalyzer] (default task-1) Unknown repository update policy '', assuming 'never'
+```
+This implies that your `settings.xml` file in your .m2 file needs to have the &lt;updatePolicy/&gt; element within the
+&lt;repository/&gt;, &lt;release/&gt;, and &lt;snapshot/&gt; elements.
+
+```xml
+<repository>
+  <updatePolicy>always</updatePolicy>
+  ...
+</repository>
+...
+<repository>
+  <releases>
+    <updatePolicy>always</updatePolicy>
+    <enabled>true</enabled>
+  </releases>
+  <snapshots>
+    <updatePolicy>always</updatePolicy>
+    <enabled>false</enabled>
+  </snapshots>
+</repository>
+```
