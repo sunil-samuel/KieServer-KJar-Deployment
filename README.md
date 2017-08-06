@@ -5,7 +5,7 @@ http://www.sunilsamuel.com
 </small>
 </p>
 
-**<h1 align='center'>BRMS :: Kie-Server KJar Deployment</h1>**
+**<h1 align='center'>[Docs] BRMS :: Kie-Server KJar Deployment</h1>**
 
 <!-- BEGIN HEADERS (copy into root page) -->
 * [Overview](./README.md#overview)
@@ -42,7 +42,12 @@ In order to deploy your rules into the kie-server and run rules against your dat
 4. BRMS (Drools)
 
 # Installation
+
 The following applications need to be installed.
+
+```
+BRMS-Rules-KJar
+```
 
 ## Create a KJar with Rules
 A KJar is created using the following plugin in pom.xml.
@@ -56,7 +61,11 @@ A KJar is created using the following plugin in pom.xml.
 </plugin>
 ```
 
-The following project can be used as a starting point for creating a kjar.
+The following project that I created can be used as a starting point for creating a kjar.
+
+```
+BRMS-Rules-KJar
+```
 
 Once the project is complete.  Run the mvn install command to install the jar file into the maven m2 directory.  The kie-server deploys your kjar from the maven repository using the artifactid.  Therefore, you must have your kjar installed prior to deploying into kie-server.
 
