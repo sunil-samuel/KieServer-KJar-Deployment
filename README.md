@@ -8,17 +8,18 @@ http://www.sunilsamuel.com
 **<h1 align='center'>[Docs] BRMS :: Kie-Server KJar Deployment</h1>**
 
 <!-- BEGIN HEADERS (copy into root page) -->
-* [Overview](./README.md#overview)
-	* <sub>[Introduction](./README.md#introduction)</sub>
-	* <sub>[Technology Stack](./README.md#technology-stack)</sub>
-* [Installation](./README.md#installation)
-	* <sub>[Create a KJar with Rules](./README.md#create-a-kjar-with-rules)</sub>
-	* <sub>[Install the Kie-Server](./README.md#install-the-kie-server)</sub>
-		* <sub>[Install EAP 7](./README.md#install-eap-7)</sub>
-		* <sub>[Install BRMS for EAP 7](./README.md#install-brms-for-eap-7)</sub>
-		* <sub>[Create User and Role](./README.md#create-user-and-role)</sub>
-		* <sub>[Start the EAP Server](./README.md#start-the-eap-server)</sub>
-	* <sub>[Deploy the KJar into Kie-Server Instance](./README.md#deploy-the-kjar-into-kie-server-instance)</sub>
+* [Overview](#overview)
+	* <sub>[Introduction](#introduction)</sub>
+	* <sub>[Technology Stack](#technology-stack)</sub>
+* [Installation](#installation)
+	* <sub>[Create a KJar with Rules](#create-a-kjar-with-rules)</sub>
+	* <sub>[Install the Kie-Server](#install-the-kie-server)</sub>
+		* <sub>[Install EAP 7](#install-eap-7)</sub>
+		* <sub>[Install BRMS for EAP 7](#install-brms-for-eap-7)</sub>
+		* <sub>[Create User and Role](#create-user-and-role)</sub>
+		* <sub>[Start the EAP Server](#start-the-eap-server)</sub>
+	* <sub>[Deploy the KJar into Kie-Server Instance](#deploy-the-kjar-into-kie-server-instance)</sub>
+	* <sub>[Invoke the ReST Service](#invoke-the-rest-service)</sub>
 <!-- END HEADERS (copy into root page) -->
 <hr>
 
@@ -145,6 +146,13 @@ The container is deployed using the following ReST service using the **PUT** HTT
 ```
 [PUT] http://localhost:8080/kie-server/services/rest/server/containers/[CONTAINER_ID]
 ```
+
+If you use the example project `BRMS-Rules-KJar`, then use the same name as the container id.  For instance:
+
+```
+[PUT] http://localhost:8080/kie-server/services/rest/server/containers/brms-rules-kjar
+```
+
 Where the CONTAINER_ID is the name that will be used to invoke the rules. The payload (below) will be used to configure and define the kjar.
 
 The complete documentation can be found on Red Hat access website.
@@ -264,4 +272,66 @@ You are now ready to make requests to the rules engine using the **POST** HTTP M
 
 ## Invoke the ReST Service
 
-Invoke the ReST Service
+Now that the KJar is installed, you are ready to execute the rules given your data (facts).  This is done by invoking the instance ReST service using **POST** HTTP Method.  The instance id is the same as the CONTAINER_ID that you defined when you deployed using the **PUT** HTTP Method.
+
+The ReST service to invoke is:
+
+```
+[POST] /kie-server/services/rest/server/containers/instances/brms-rules-kjar
+```
+
+For instance, given the raw HTTP post request:
+
+```http
+POST /kie-server/services/rest/server/containers/instances/brms-rules-kjar HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+accept: application/json
+X-KIE-ContentType: JSON
+Accept: application/json
+Authorization: Basic [your authorization]
+Cache-Control: no-cache
+
+{
+   "lookup":"defaultStatelessKieSession",
+   "commands":[
+      {
+         "insert":{
+            "object":{
+               "com.sunilsamuel.brms.model.UserInformation":{
+                  "firstName":"Sunil",
+                  "lastName":"Samuel",
+                  "identifier":2342342,
+                  "age":18,
+                  "collegeStatus":"PartTime",
+                  "familyIncome":46000
+               }
+            }
+         }
+      },
+      {
+         "insert":{
+            "object":{
+               "com.sunilsamuel.brms.model.UserInformation":{
+                  "firstName":"Joel",
+                  "lastName":"Samuel",
+                  "identifier":234234245,
+                  "age":18,
+                  "collegeStatus":"FullTime",
+                  "familyIncome":43000
+               }
+            }
+         }
+      },
+      {
+         "fire-all-rules":""
+      },
+      {
+         "query":{
+            "name":"Query LoanAmount",
+            "out-identifier":"loanAmount"
+         }
+      }
+   ]
+}
+``` 
